@@ -61,12 +61,12 @@ do
 	do
 		 printf "\nIncorrect Password! Try again...\n" && sleep 1 && ino
 		((i++))
+	done	
 	if [[ $? -eq 0 ]]
 	then 
 		break
 	fi	
-	done
-done	
+done
 
 cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null
 
