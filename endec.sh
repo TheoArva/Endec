@@ -13,7 +13,6 @@ function merge01 { #Ask user for file name, decrypt given filename & force syste
 
 nameinput; gpg -o "$response".tar.gz -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent
 
-
 }
 
 function unzel { #Extract zipped file to current dir & delete it.
@@ -24,7 +23,8 @@ rm -r "$response".tar.gz;
 
 }
 
-function decexitcode { #Filter exit error of function 'merge01' from SDTERR file and proceed with either funtion 'nxpassloop' for incorrect password entered, or 'nxnameloop' function for incorrect name entered. Look at their descriptions below for more info.  
+function decexitcode { #Filter exit error of function 'merge01' from SDTERR file and proceed with either funtion 'nxpassloop' for incorrect password entered,>> 
+# >> or 'nxnameloop' function for incorrect name entered. Look at their descriptions below for more info.  
 
 if [[ $? -ne 0 ]]
 then
@@ -42,7 +42,10 @@ fi
 
 }
 
-function nxpassloop { #Loop asking user to try again with correct password for decrypted file. If password is incorrect again, loop will repeat twice + 1 from initial prompt to enter password = 3, overall for user. Loop will break if correct password is provided. Ending with filtering the error text file to end the function with exit status, or  with 'unzel' to unzip and delete zipped file, if correct password is provided.
+function nxpassloop { #Loop asking user to try again with correct password for decrypted file. If password is incorrect again, loop will repeat >> 
+# >> twice + 1 from initial prompt to enter password = 3, overall for user. >> 
+# >> Loop will break if correct password is provided. Ending with filtering the error text file to end the function with exit status, >> 
+# >> or  with 'unzel' to unzip and delete zipped file, if correct password is provided.
 
 i=0
 
@@ -77,11 +80,12 @@ else
        unzel 2> /dev/null
 fi
 
-
-
 }
 
-function nxnameloop { #Loop asking user to try with correct filename again. If filename is incorrect again, loop will repeat twice + 1 from initial prompt to enter filename = 3, overall for user. Loop will break if correct filename is given, or correct filemame+correct password, or correct filename+incorrect password. Ending these 3 scenarios with triple OR statement that filters them and provides an ending for each one of them. Scenario of incorrect filename+incorrect password is redirected to the nxpassloop.
+function nxnameloop { #Loop asking user to try with correct filename again. If filename is incorrect again, loop will repeat twice + 1 from initial prompt >>
+# >> to enter filename = 3, overall for user. Loop will break if correct filename is given, or correct filemame+correct password, >> 
+# >> or correct filename+incorrect password. Ending these 3 scenarios with triple OR statement that filters them and provides an ending for each one of them. >> 
+# >> Scenario of incorrect filename+incorrect password is redirected to the nxpassloop.
 
 por () {
 
@@ -109,6 +113,7 @@ then
 fi
 
 rm -r ~/.endecSTDERR.txt
+
 }
 
 nor () {
@@ -124,8 +129,8 @@ elif [[ $? -ne 0 ]]
 then
 	return 0
 fi
-}
 
+}
 
 i=0
 
@@ -148,9 +153,11 @@ do
 done	
 
 unzel 2> /dev/null || por || por2
+
 }
 
-function uncrypt { #Final script for Decrypt and Unzip. If above funtion 'merge01' is successful, then unzip file & end script. If unsuccessful, filter error accordingly to decide for next step. Look function's 'decexitcode' description above for more info.
+function uncrypt { #Final script for Decrypt and Unzip. If above funtion 'merge01' is successful, then unzip file & end script. >> 
+# >> If unsuccessful, filter error accordingly to decide for next step. Look function's 'decexitcode' description above for more info.
 
 merge01
 
@@ -173,10 +180,10 @@ rm -r "$response" "$response".tar.gz
 
 }
 
-function zip { #Zip file/folder & suppress any STDERR msg to null. If filename entered is incorrect or doesn't exist, create dummy file & return 1. Otherwise proceed normally and return 0.
+function zip { #Zip file/folder & suppress any STDERR msg to null. If filename entered is incorrect or doesn't exist, create dummy file & return 1. >> 
+# >> Otherwise proceed normally and return 0.
 
 tar -czvf "$response".tar.gz "$response" 2> /dev/null
-
 
 if [[ $? -ne 0 ]]
 then
@@ -187,7 +194,9 @@ fi
 
 }
 
-function finder { #Look for dummy file created only when incorrect filename was entered previously. If SDTERR dummy file exists, inform user that an empty zipped file is created for every incorrect name entered and prompt user to delete it. Used find commnad to look for any 45b size .tar.gz file creaed within the last minute.
+function finder { #Look for dummy file created only when incorrect filename was entered previously. >> 
+# >> If SDTERR dummy file exists, inform user that an empty zipped file is created for every incorrect name entered and prompt user to delete it. 
+# >>Used find commnad to look for any 45b size .tar.gz file creaed within the last minute.
 
 ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
 
@@ -207,7 +216,9 @@ nameinput && zip
 
 }
 
-function loopa { #Loop checking if filename entered by user exists or not, using the function 'finder'.Loop will break if correct filename is given. Ending function with 'finder' to filter incorrect last filename entered, or if a dummy STDERR file doesn't exist, script will proceed with function 'encrypt'. Look above for more info about 'ecrypt'.
+function loopa { #Loop checking if filename entered by user exists or not, using the function 'finder'. Loop will break if correct filename is given. >> 
+# >> Ending function with 'finder' to filter incorrect last filename entered, or if a dummy STDERR file doesn't exist, script will proceed >> 
+# >> with function 'encrypt'. Look above for more info about 'ecrypt'.
 
 i=0
 
@@ -225,8 +236,6 @@ do
 		return 0
 	fi
 done	
-
-
 
 ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
 
@@ -261,10 +270,11 @@ fi
 
 #Created a makefile to install 'gpg' & 'tar', rename endec.sh to endec, turn endec to an exec file, and move it to /usr/bin to run it as a command.
 
-sudo find /usr/bin -name "endec" > ~/.endecInstall.txt         #These 2 first lines will look for an 'endec' file in /usr/bin and redirect result to a									SDTOUT file.
+sudo find /usr/bin -name "endec" > ~/.endecInstall.txt         #These 2 first lines will look for an 'endec' file in /usr/bin and redirect result to a SDTOUT file.
 cat ~/.endecInstall.txt | grep -i "endec" > /dev/null           
 
-if [[ $? -eq 0 ]]						#If SDTOUT file doesn't include the word 'endec', user will be advised to launch 									makefile to install endec; instructions are included; run 'bash endec.sh' to see ins									ructions
+if [[ $? -eq 0 ]]						#If SDTOUT file doesn't include the word 'endec', user will be advised to launch makefile to install endec; 
+								# >> instructions are included; run 'bash endec.sh' to see instructions
 then	
 	if [[ $1 =~ "-en" ]]
 	then
