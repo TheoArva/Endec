@@ -8,8 +8,8 @@ Installation: endec.sh
 		@sudo apt update
 		@printf "\nRenaming endec.sh to endec... Done\n"
 		@mv ./endec.sh ./endec
-		@printf "Changing file permissions to -rwxr--r--... Done\n"
-		@sudo chmod 744 ./endec
+		@printf "Changing file permissions to -rwxr-xr-x... Done\n"
+		@sudo chmod 755 ./endec
 		@printf "Moving endec to /user/bin... Done\n"
 		@sudo mv ./endec /usr/bin
 		
