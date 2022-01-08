@@ -1,4 +1,4 @@
-#Endec.sh Readme
+# Endec.sh Readme
 
 This is a script written in Shell/Bash, which allows user to:
 
@@ -10,7 +10,7 @@ and
 
 files and folders.
 
-##Requirements:
+## Requirements:
 
 - **tar**
 - **gpg** 
@@ -18,7 +18,7 @@ files and folders.
 
 must be installed on system.
 
-##How to start:
+## How to start:
 
 1. Download ***endec.sh*** & ***makefile*** to your computer.
 
