@@ -38,7 +38,7 @@ endec -h[^1]
 
 for more information about available OPTIONS.
 
-[^1]: *as 2 different words, separated by a space*
+[^1]: *as 2 different words, separated by a space.*
 
 [^2]: *this will install **tar** & **gpg**, turn script into an executable file & move it to /usr/bin, so user can run it as a system command.*
 
