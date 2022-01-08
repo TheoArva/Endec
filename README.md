@@ -16,7 +16,7 @@ This is a script written in Shell/Bash, which allows user to:
 - **gpg** 
 - **make**[^3]
 
-must be installed on system.
+  must be installed on system.
 
 ## How to start:
 
