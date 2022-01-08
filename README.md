@@ -4,7 +4,7 @@ This is a script written in Shell/Bash, which allows user to:
 
 1. Zip & Encrypt
 
-and
+\tand
 
 2. Decrypt & Uzip
 
