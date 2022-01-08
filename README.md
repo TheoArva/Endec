@@ -4,11 +4,11 @@ This is a script written in Shell/Bash, which allows user to:
 
 1. Zip & Encrypt
 
-\tand
+     and
 
 2. Decrypt & Uzip
 
-files and folders.
+  files and folders.
 
 ## Requirements:
 
