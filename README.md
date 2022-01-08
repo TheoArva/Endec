@@ -8,7 +8,7 @@ This is a script written in Shell/Bash, which allows user to:
 
 2. Decrypt & Uzip
 
-files and folders.
+  files and folders.
 
 ## Requirements:
 
@@ -38,10 +38,10 @@ must be installed on system.
 
     and hit Enter.
 
-for more information about available [OPTIONS]...
+  for more information about available [OPTIONS]...
 
-[^1]: *as 2 different words, separated by a space.*
+[^1]: *As 2 different words, separated by a space.*
 
-[^2]: *this will install **tar** & **gpg**, turn script into an executable file & move it to /usr/bin, so user can run it as a system command.*
+[^2]: *This will install **tar** & **gpg**, turn script into an executable file & move it to /usr/bin, so user can run it as a system command.*
 
 [^3]: *Installing ***make*** is the highest priority since ***tar*** & ***gpg*** will be installed, when running the ***makefile***.*
