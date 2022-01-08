@@ -26,19 +26,19 @@ must be installed on system.
 
 3. Type: 
 
-bash endec.sh[^1]
+    bash endec.sh[^1]
 
-and hit Enter.
+    and hit Enter.
 
 4. Follow the instructions that appear about how to run the makefile for installation.[^2]
 
 5. Once installation is complete, type:
 
-endec -h[^1]
+    endec -h[^1]
 
-and hit Enter.
+    and hit Enter.
 
-for more information about available [OPTIONS]....
+for more information about available [OPTIONS]...
 
 [^1]: *as 2 different words, separated by a space.*
 
