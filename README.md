@@ -4,11 +4,11 @@ This is a script written in Shell/Bash, which allows user to:
 
 1. Zip & Encrypt
 
-       and
+      and
 
 2. Decrypt & Uzip
 
-  files and folders.
+files and folders.
 
 ## Requirements:
 
@@ -36,7 +36,9 @@ and hit Enter.
 
 endec -h[^1]
 
-for more information about available OPTIONS.
+and hit Enter.
+
+for more information about available [OPTIONS]....
 
 [^1]: *as 2 different words, separated by a space.*
 
