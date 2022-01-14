@@ -19,9 +19,9 @@ function unzel { #Extract zipped file to current dir & delete it.
 
 tar -xzvf "$response".tar.gz -C ./;
 
-printf "Original encrypted file can be deleted.\nDelete it, permanently: (y/n)? "
+printf "\nOriginal encrypted file can be deleted.\nDelete it, permanently: (y/n)? "
 
-rm -r "$response".tar.gz; rm -i "$response"
+rm -r "$response".tar.gz; rm -rI "$response"
 
 }
 
@@ -243,7 +243,7 @@ if [[ $? -eq 0 ]]
 then
 	printf "\n\t!!!File or Folder does NOT exist!!!\n\n\a" ;  rm -r ~/.endecSTDERR.txt 2> /dev/null
 else
-	encrypt 1> /dev/null 2> /dev/null && printf "Original file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -ir "$response" "$response2".tar.gz
+	encrypt 1> /dev/null 2> /dev/null && printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -rI "$response" "$response2".tar.gz
 
 fi
 
@@ -255,7 +255,7 @@ merge02
 
 if [[ $? -eq 0 ]]
 then
-	encrypt; printf "Original file/folder & its zipped '*.tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -ir "$response" "$response2".tar.gz
+	encrypt; printf "\nOriginal file/folder & its zipped '*.tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -rI "$response" "$response2".tar.gz
 else
 	finder; sleep 1; loopa
 fi
