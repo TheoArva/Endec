@@ -154,7 +154,7 @@ do
 
 done	
 
-unzel 2> /dev/null || por || por2
+por || por2 || unzel 2> /dev/null
 
 }
 
