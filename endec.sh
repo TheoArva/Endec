@@ -112,6 +112,8 @@ cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null
 if [[ $? -eq 0 ]]
 then 
 	nxpassloop
+else
+	return 1
 fi
 
 rm -r ~/.endecSTDERR.txt
