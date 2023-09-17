@@ -1,32 +1,42 @@
 #!/bin/bash
 
-function nameinput { #Ask user to enter file's or folder's name
+nameinput() { #Ask user to enter file's or folder's name for zipping & encryption
 
 printf "\nEnter file/folder name or full PATH:\n"
 read response
 
 }
 
-################################DECRYPT & UNZIP#################################
+promptdelete() { #Ask user to decide what they wish to do with the original file/folder & its zipped file; delete them, or not.
 
-function merge01 { #Ask user for file name, decrypt given filename & force system to forget password. Redirect SDTERR to file & STDOUT to null.
+read response3
 
-nameinput; gpg -o "$response".tar.gz -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent
+if [[ $response3 =~ [yY] ]]
+then
+	rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
+elif [[ $response3 =~ [nN] ]]
+then
+	return 0
+elif [[ $response3 != [yYnN] ]]
+then
+	printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No"
+fi
+}
+ 
+function merge01 { #Ask user for file name, decrypt given filename & force system to forget password.
+
+nameinput; gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent
 
 }
 
-function unzel { #Extract zipped file to current dir & delete it.
+function unzel { #Extract zipped file to current dir & ask user what they wish to do with the encrypted file & its decrypted zipped file.
 
-tar -xzvf "$response".tar.gz -C ./;
+tar -xzvf "${response%.gpg}" -C ./;
 
-printf "\nOriginal encrypted file can be deleted.\nDelete it, permanently: (y/n)? "
-
-rm -r "$response".tar.gz; rm -rI "$response"
-
+printf "\nOriginal encrypted file & its decrypted zipped file can be deleted.\nDelete them, permanently:(y/n)? "; promptdelete
 }
 
-function decexitcode { #Filter exit error of function 'merge01' from SDTERR file and proceed with either funtion 'nxpassloop' for incorrect password entered,>> 
-# >> or 'nxnameloop' function for incorrect name entered. Look at their descriptions below for more info.  
+decexitcode() { #Filter exit error of 'merge01' from SDTERR file & proceed with either 'nxpassloop' for incorrect password entered, or 'nxnameloop' for incorrect name entered.  
 
 if [[ $? -ne 0 ]]
 then
@@ -44,17 +54,14 @@ fi
 
 }
 
-function nxpassloop { #Loop asking user to try again with correct password for decrypted file. If password is incorrect again, loop will repeat >> 
-# >> twice + 1 from initial prompt to enter password = 3, overall for user. >> 
-# >> Loop will break if correct password is provided. Ending with filtering the error text file to end the function with exit status, >> 
-# >> or  with 'unzel' to unzip and delete zipped file, if correct password is provided.
+nxpassloop() { #Loop asking user to try again with entering the correct password for decrypting the file. Max # of tries is 3. The Loop will break if correct password is provided. Ends with filtering the error txt file to end the function with exit status, or  with 'unzel' to unzip and delete zipped file, if correct password is provided.
 
 i=0
 
 printf "\nIncorrect Password! Try again...\n"; sleep 1
 
-ino () {
-	gpgconf --reload gpg-agent; gpg -o "$response".tar.gz -d "$response" 2> /dev/null 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
+ino() {
+	gpgconf --reload gpg-agent; gpg -o "${response%.gpg}" -d "$response" 2> /dev/null 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
 
 }
 
@@ -84,12 +91,9 @@ fi
 
 }
 
-function nxnameloop { #Loop asking user to try with correct filename again. If filename is incorrect again, loop will repeat twice + 1 from initial prompt >>
-# >> to enter filename = 3, overall for user. Loop will break if correct filename is given, or correct filemame+correct password, >> 
-# >> or correct filename+incorrect password. Ending these 3 scenarios with triple OR statement that filters them and provides an ending for each one of them. >> 
-# >> Scenario of incorrect filename+incorrect password is redirected to the nxpassloop.
+nxnameloop() { #Loop asking user to try with correct filename again. Max # of attempts is 3. Loop will break if correct filename is given, or correct filemame+correct password, or correct filename+incorrect password. These 3 ending scenarios with triple OR statement that filters them and provides an ending for each one of them. Scenario of incorrect filename+incorrect password is redirected to the 'nxpassloop'.
 
-por () {
+por() {
 
 cat ~/.endecSTDERR.txt | grep -i "no such file" 2> /dev/null 1> /dev/null
 
@@ -103,9 +107,9 @@ fi
 
 rm -r ~/.endecSTDERR.txt
 
-}
 
-por2 () {
+}
+por2() {
 
 cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null
 
@@ -120,9 +124,9 @@ rm -r ~/.endecSTDERR.txt
 
 }
 
-nor () {
+nor() {
 
-gpgconf --reload gpg-agent; nameinput &&  gpg -o "$response".tar.gz -d "$response" 2> /dev/null 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent;
+gpgconf --reload gpg-agent; nameinput &&  gpg -o "${response%.gpg}" -d "$response" 2> /dev/null 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent;
 
 cat ~/.endecSTDERR.txt | grep -i "no such file" 2> /dev/null 1> /dev/null
 
@@ -156,12 +160,11 @@ do
 
 done	
 
-por || por2 || unzel 2> /dev/null
+por || por2 || unzel 2> /dev/null 
 
 }
 
-function uncrypt { #Final script for Decrypt and Unzip. If above funtion 'merge01' is successful, then unzip file & end script. >> 
-# >> If unsuccessful, filter error accordingly to decide for next step. Look function's 'decexitcode' description above for more info.
+uncrypt() { #Final script for Decrypt and Unzip. If above funtion 'merge01' is successful, then unzip file & end script, or filter error accordingly to decide for next step.
 
 merge01
 
@@ -174,9 +177,7 @@ fi
 
 }
 
-################################ZIP & ENCRYPT#################################
-
-function encrypt { #Encrypt zipped file & force system to "forget" password
+encrypt() { #Encrypt zipped file & force system to forget password
 
 gpg --symmetric --cipher-algo AES256 "$response2".tar.gz 
 
@@ -184,8 +185,7 @@ gpgconf --reload gpg-agent
 
 }
 
-function zip { # If filename entered is incorrect or doesn't exist, create dummy file & return 1. >> 
-# >> Otherwise proceed with prompting user to enter new filename & zipping.
+zip() { # If filename entered is incorrect or doesn't exist, create dummy file & return 1. Otherwise proceed with prompting user to enter new filename & zipping.
 
 ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null
 
@@ -199,7 +199,7 @@ fi
 
 }
 
-function finder { #Look for dummy file created only when incorrect filename was entered previously.
+finder() { #Look for dummy file created only when incorrect filename was entered previously.
 
 ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
 
@@ -212,15 +212,13 @@ fi
 
 }
 
-function merge02 { #Prompt user to enter filename & use function 'zip'. See above for info about 'zip'.
+merge02() { #Prompt user to enter filename & use function 'zip'.
 
 nameinput && zip
 
 }
 
-function loopa { #Loop checking if filename entered by user exists or not, using the function 'finder'. Loop will break if correct filename is given. >> 
-# >> Ending function with 'finder' to filter incorrect last filename entered, or if a dummy STDERR file doesn't exist, script will proceed >> 
-# >> with function 'encrypt' &  prompt user to delete, or not, original file/folder & its zipped file. Look above for more info about 'ecrypt'.
+loopa() { #Loop checking whether filename entered by user exists or not, using the function 'finder'. Loop will break if correct filename is given. Ending function with 'finder' to filter incorrect last filename entered, or if a dummy STDERR file doesn't exist, script will proceed with function 'encrypt' & prompt user to delete, or not, original file/folder & its zipped file.
 
 i=0
 
@@ -245,19 +243,19 @@ if [[ $? -eq 0 ]]
 then
 	printf "\n\t!!!File or Folder does NOT exist!!!\n\n\a" ;  rm -r ~/.endecSTDERR.txt 2> /dev/null
 else
-	encrypt 1> /dev/null 2> /dev/null && printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -rI "$response" "$response2".tar.gz
+	encrypt 1> /dev/null 2> /dev/null && printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?"; promptdelete 
 
 fi
 
 }
 
-function zipcrypt { #Final script to Zip & Encrypt file/folder, prompt user to delete, or not, original file/folder & its zipped file
+zipcrypt() { #Final script to Zip & Encrypt file/folder, prompt user to delete, or not, original file/folder & its zipped file
 
 merge02
 
 if [[ $? -eq 0 ]]
 then
-	encrypt; printf "\nOriginal file/folder & its zipped '*.tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?\n"; rm -rI "$response" "$response2".tar.gz
+	encrypt; printf "\nOriginal file/folder & its zipped '*.tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?"; promptdelete
 else
 	finder; sleep 1; loopa
 fi
@@ -270,7 +268,7 @@ fi
 #Makefile must be run to install endec!
 #Run: bash endec.sh to launch info about how to run makefile.
 
-#Created a makefile to install 'gpg' & 'tar', rename endec.sh to endec, turn endec to an exec file, and move it to /usr/bin to run it as a command.
+#Created a makefile to (i) install 'gpg' & 'tar', (ii) rename endec.sh to endec, (iii) turn endec to an exec file, (iv) move it to /usr/bin to run it as a command from terminal.
 
 sudo find /usr/bin -name "endec" > ~/.endecInstall.txt         #These 2 first lines will look for an 'endec' file in /usr/bin and redirect result to a SDTOUT file.
 cat ~/.endecInstall.txt | grep -i "endec" > /dev/null           
