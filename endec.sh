@@ -7,7 +7,10 @@ read response
 
 }
 
+
 promptdelete() { #Ask user to decide what they wish to do with the original file/folder & its zipped file; delete them, or not.
+
+i=0
 
 read response3
 
@@ -19,7 +22,11 @@ then
 	return 0
 elif [[ $response3 != [yYnN] ]]
 then
-	printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No"
+	while [[ $i -lt 1 ]]
+	do
+		printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n" && promptdelete
+		((i++))
+	done
 fi
 }
  
