@@ -2,7 +2,7 @@
 
 nameinput() { #Ask user to enter file's or folder's name for zipping & encryption
 
-printf "\nEnter file/folder name or full PATH:\n"
+printf "\nEnter file or folder name:\n"
 read response
 
 }
