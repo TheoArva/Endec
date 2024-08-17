@@ -1,16 +1,15 @@
 #!/bin/bash
 
-nameinput() { #Ask user to enter file's or folder's name for zipping & encryption
+nameinput() {
 
 printf "\nEnter file or folder name:\n"
 read response
 
 }
 
+promptdelete() {
 
-promptdelete() { #Ask user to decide what they wish to do with the original file/folder & its zipped file; delete them, or not.
-
-i=0
+i=1
 
 read response3
 
@@ -22,28 +21,39 @@ then
 	return 0
 elif [[ $response3 != [yYnN] ]]
 then
-	while [[ $i -lt 1 ]]
+	while [[ $i -le 3 ]]
 	do
-		printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n" && promptdelete
+		printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n";
+		read response3;
+		if [[ $response3 =~ [nN] ]]
+		then
+			break
+		elif [[ $response3 =~ [yY] ]]
+		then
+			rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
+			break
+		fi
 		((i++))
 	done
 fi
+
 }
- 
-function merge01 { #Ask user for file name, decrypt given filename & force system to forget password.
+
+merge01() {
 
 nameinput; gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent
 
 }
 
-function unzel { #Extract zipped file to current dir & ask user what they wish to do with the encrypted file & its decrypted zipped file.
+unzel() {
 
 tar -xzvf "${response%.gpg}" -C ./;
 
 printf "\nOriginal encrypted file & its decrypted zipped file can be deleted.\nDelete them, permanently:(y/n)? "; promptdelete
+
 }
 
-decexitcode() { #Filter exit error of 'merge01' from SDTERR file & proceed with either 'nxpassloop' for incorrect password entered, or 'nxnameloop' for incorrect name entered.  
+decexitcode() {
 
 if [[ $? -ne 0 ]]
 then
@@ -58,12 +68,11 @@ else
 	return 0
 fi
 
-
 }
 
-nxpassloop() { #Loop asking user to try again with entering the correct password for decrypting the file. Max # of tries is 3. The Loop will break if correct password is provided. Ends with filtering the error txt file to end the function with exit status, or  with 'unzel' to unzip and delete zipped file, if correct password is provided.
+nxpassloop() {
 
-i=0
+i=1
 
 printf "\nIncorrect Password! Try again...\n"; sleep 1
 
@@ -74,18 +83,16 @@ ino() {
 
 ino
 
-while [[ $? -ne 0 ]]
-do	
-	while [[ $i -lt 1 ]]
+if [[ $? -ne 0 ]]
+then	
+	while [[ $i -lt 3 ]]
 	do
 		 printf "\nIncorrect Password! Try again...\n\a" && sleep 1 && ino
-		((i++))
+		 ((i++))
 	done	
-	if [[ $? -eq 0 ]]
-	then 
-		break
-	fi	
-done
+else 
+	return 0
+fi
 
 cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null
 
@@ -98,8 +105,8 @@ fi
 
 }
 
-nxnameloop() { #Loop asking user to try with correct filename again. Max # of attempts is 3. Loop will break if correct filename is given, or correct filemame+correct password, or correct filename+incorrect password. These 3 ending scenarios with triple OR statement that filters them and provides an ending for each one of them. Scenario of incorrect filename+incorrect password is redirected to the 'nxpassloop'.
-
+nxnameloop() {
+	
 por() {
 
 cat ~/.endecSTDERR.txt | grep -i "no such file" 2> /dev/null 1> /dev/null
@@ -114,8 +121,8 @@ fi
 
 rm -r ~/.endecSTDERR.txt
 
-
 }
+
 por2() {
 
 cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null
@@ -147,31 +154,28 @@ fi
 
 }
 
-i=0
+i=1
 
 printf "\n\t!!!File or Folder does NOT exist!!!\n\a"
 
 nor 
 
-while [[ $? -ne 0 ]]
-do
-	while [[ $i -lt 1 ]]
+if [[ $? -ne 0 ]]
+then
+	while [[ $i -lt 3 ]]
 	do
 		printf "\n\t!!!File or Folder does NOT exist!!!\n\a"; nor
 		((i++))
 	done
-	if [[ $? -eq 0 ]]
-	then
-		return 0
-	fi
-
-done	
-
+else
+	return 0
+fi
+	
 por || por2 || unzel 2> /dev/null 
 
 }
 
-uncrypt() { #Final script for Decrypt and Unzip. If above funtion 'merge01' is successful, then unzip file & end script, or filter error accordingly to decide for next step.
+uncrypt() { 
 
 merge01
 
@@ -184,7 +188,7 @@ fi
 
 }
 
-encrypt() { #Encrypt zipped file & force system to forget password
+encrypt() { 
 
 gpg --symmetric --cipher-algo AES256 "$response2".tar.gz 
 
@@ -192,7 +196,7 @@ gpgconf --reload gpg-agent
 
 }
 
-zip() { # If filename entered is incorrect or doesn't exist, create dummy file & return 1. Otherwise proceed with prompting user to enter new filename & zipping.
+zip() {
 
 ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null
 
@@ -206,7 +210,7 @@ fi
 
 }
 
-finder() { #Look for dummy file created only when incorrect filename was entered previously.
+finder() {
 
 ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
 
@@ -219,30 +223,28 @@ fi
 
 }
 
-merge02() { #Prompt user to enter filename & use function 'zip'.
+merge02() {
 
 nameinput && zip
 
 }
 
-loopa() { #Loop checking whether filename entered by user exists or not, using the function 'finder'. Loop will break if correct filename is given. Ending function with 'finder' to filter incorrect last filename entered, or if a dummy STDERR file doesn't exist, script will proceed with function 'encrypt' & prompt user to delete, or not, original file/folder & its zipped file.
+loopa() {
 
-i=0
+i=1
 
 merge02
 
-while [[ $? -ne 0 ]]
-do	
-	while [[ $i -lt 1 ]]
+if [[ $? -ne 0 ]]
+then	
+	while [[ $i -lt 3 ]]
 	do
 		finder; merge02 
 		((i++))		
 	done
-	if [[ $? -eq 0 ]]
-	then
-		return 0
-	fi
-done	
+else
+	return 0
+fi	
 
 ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
 
@@ -256,7 +258,7 @@ fi
 
 }
 
-zipcrypt() { #Final script to Zip & Encrypt file/folder, prompt user to delete, or not, original file/folder & its zipped file
+zipcrypt() {
 
 merge02
 
@@ -269,25 +271,16 @@ fi
 
 }
 
-###############################Final Script#####################################
-
-
-#Makefile must be run to install endec!
-#Run: bash endec.sh to launch info about how to run makefile.
-
-#Created a makefile to (i) install 'gpg' & 'tar', (ii) rename endec.sh to endec, (iii) turn endec to an exec file, (iv) move it to /usr/bin to run it as a command from terminal.
-
-sudo find /usr/bin -name "endec" > ~/.endecInstall.txt         #These 2 first lines will look for an 'endec' file in /usr/bin and redirect result to a SDTOUT file.
+sudo find /usr/bin -name "endec" > ~/.endecInstall.txt
 cat ~/.endecInstall.txt | grep -i "endec" > /dev/null           
 
-if [[ $? -eq 0 ]]						#If SDTOUT file doesn't include the word 'endec', user will be advised to launch makefile to install endec; 
-								# >> instructions are included; run 'bash endec.sh' to see instructions
+if [[ $? -eq 0 ]]
 then	
 	if [[ $1 =~ "-en" ]]
 	then
 		zipcrypt; rm -r ~/.endecSTDERR.txt 2> /dev/null
 	elif [[ $1 =~ "-de" ]]
-	then							#After makefile is launched and complete, type: endec -h for more info about options
+	then
 		uncrypt; rm -r ~/.endecSTDERR.txt 2> /dev/null
 	elif [[ $1 =~ "-ui" ]]
 	then
@@ -305,4 +298,3 @@ else
 fi
 
 rm -r ~/.endecInstall.txt
-################################THE END###############################################
