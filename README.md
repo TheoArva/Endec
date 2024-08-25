@@ -17,7 +17,7 @@ along with this program.  If not, see [https://www.gnu.org/licenses/](https://ww
 
 Email: *theodorosarv@gmail.com*
 
-**Endec (v1.0)**
+## Endec ##
 
 This is a script written in Shell/Bash, which allows user to:
 
