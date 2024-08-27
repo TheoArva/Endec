@@ -37,12 +37,12 @@ then
 		read response3;
 		if [[ $response3 =~ [nN] ]]
 		then
-			rm -rf ~/.endecSTDERR.txt;
+			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
 			break
 		elif [[ $response3 =~ [yY] ]]
 		then
 			rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
-			rm -rf ~/.endecSTDERR.txt;
+			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
 			break
 		fi
 		((i++))
@@ -51,8 +51,8 @@ then
 	if [[ $? -eq 0 ]]
 	then
         	printf ""$response3" is invalid.\n";
-		printf "Failed Attempt! No files were deleted!\n"
-        	rm -rf ~/.endecSTDERR.txt
+		printf "Failed Attempt! No files were deleted!\n";
+        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
 	else
         	return 0
 
@@ -128,14 +128,14 @@ then
 else 
         while [[ $i -lt 3 ]]
         do
-                printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension!\n"
+                printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension!\n";
                 sleep 1;
-                touch -f ~/.endecSTDERR.txt
+                touch -f ~/.endecSTDERR.txt;
                 nameinput;
                 ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null;
                 if [[ $? -eq 0 ]]
                 then
-                        rm -rf ~/.endecSTDERR.txt;
+                        rm -rf ~/.endecSTDERR.txt 2> /dev/null;
                         gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent;
                         unzel 2> /dev/null;
                         break
@@ -151,8 +151,8 @@ else
                 if [[ $? -eq 0 ]]
                 then
                         printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
-                        printf "\nFailed Attempt! Halt!\n"
-                        rm -rf ~/.endecSTDERR.txt
+                        printf "\nFailed Attempt! Halt!\n";
+                        rm -rf ~/.endecSTDERR.txt 2> /dev/null;
                 else
                         return 0
                 fi
@@ -187,13 +187,13 @@ else
         do
                 printf "\nFile or Folder does NOT exist!\n";
                 sleep 1;
-		touch -f ~/.endecSTDERR.txt
+		touch -f ~/.endecSTDERR.txt;
                 nameinput;
                 ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null;
                 if [[ $? -eq 0 ]]
                 then
                         zip;
-			rm -rf ~/.endecSTDERR.txt;
+			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
                         promptdelete;
                         break
                 fi
@@ -203,8 +203,8 @@ else
 	if [[ $? -eq 0 ]]
 	then
         	printf "\nFile or Folder does NOT exist!\n";
-		printf "\nFailed Attempt! Halt!\n"
-        	rm -rf ~/.endecSTDERR.txt
+		printf "\nFailed Attempt! Halt!\n";
+        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
 	else
         	return 0
 
