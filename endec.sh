@@ -92,7 +92,7 @@ then
 		fi
 		((i++))
 	done	
-	cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null;
+	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
 	if [[ $? -eq 0 ]]
 	then
 		printf "\nIncorrect Password!\nFailed attempt... Halt!\n\a" 
@@ -112,13 +112,13 @@ uncrypt() {
 i=1
 
 nameinput;
-ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null
+ls -a ./ | grep -x "$response" &> /dev/null
 
 if [[ $? -eq 0 ]]
 then
         gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent;
         unzel 2> /dev/null;
-        cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null;
+        cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
         if [[ $? -eq 0 ]]
         then
                 nxpassloop
@@ -132,7 +132,7 @@ else
                 sleep 1;
                 touch -f ~/.endecSTDERR.txt;
                 nameinput;
-                ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null;
+                ls -a ./ | grep -x "$response" &> /dev/null;
                 if [[ $? -eq 0 ]]
                 then
                         rm -rf ~/.endecSTDERR.txt 2> /dev/null;
@@ -142,12 +142,12 @@ else
                 fi
                 ((i++))
         done
-        cat ~/.endecSTDERR.txt | grep -i "decryption failed" 2> /dev/null 1> /dev/null;
+        cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
         if [[ $? -eq 0 ]]
         then
                 nxpassloop
         else
-                ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
+                ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
                 if [[ $? -eq 0 ]]
                 then
                         printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
@@ -176,7 +176,7 @@ gpgconf --reload gpg-agent;
 i=1
 
 nameinput;
-ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null
+ls -a ./ | grep -x "$response" &> /dev/null
 
 if [[ $? -eq 0 ]]
 then
@@ -189,7 +189,7 @@ else
                 sleep 1;
 		touch -f ~/.endecSTDERR.txt;
                 nameinput;
-                ls -a ./ | grep -x "$response" 2> /dev/null 1> /dev/null;
+                ls -a ./ | grep -x "$response" &> /dev/null;
                 if [[ $? -eq 0 ]]
                 then
                         zip;
@@ -199,7 +199,7 @@ else
                 fi
                 ((i++))
         done
-	ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
+	ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
 	if [[ $? -eq 0 ]]
 	then
         	printf "\nFile or Folder does NOT exist!\n";
