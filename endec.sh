@@ -10,7 +10,7 @@
 nameinput() {
 
 printf "\nEnter file or folder name:\n"
-read response
+IFS= read -r response
 
 }
 
@@ -20,26 +20,26 @@ i=1
 
 printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?";
 
-read response3
+IFS=read -r response3
 
-if [[ $response3 =~ [yY] ]]
+if [[ "$response3" =~ [yY] ]]
 then
 	rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
-elif [[ $response3 =~ [nN] ]]
+elif [[ "$response3" =~ [nN] ]]
 then
 	return 0
-elif [[ $response3 != [yYnN] ]]
+elif [[ "$response3" != [yYnN] ]]
 then
 	while [[ $i -le 2 ]]
 	do
 		printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n";
 		touch -f ~/.endecSTDERR.txt;
-		read response3;
-		if [[ $response3 =~ [nN] ]]
+		IFS= read -r response3;
+		if [[ "$response3" =~ [nN] ]]
 		then
 			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
 			break
-		elif [[ $response3 =~ [yY] ]]
+		elif [[ "$response3" =~ [yY] ]]
 		then
 			rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
 			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
@@ -166,7 +166,7 @@ zipcrypt() {
 zip() { 
 
 printf "Enter new name of zipped file '*.tar.gz'\n";
-read response2;
+IFS= read -r response2;
 tar -czvf "$response2".tar.gz "$response" 2> /dev/null;
 gpg --symmetric --cipher-algo AES256 "$response2".tar.gz;
 gpgconf --reload gpg-agent;
