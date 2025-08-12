@@ -214,7 +214,7 @@ fi
 
 }
 
-sudo find /usr/bin -name "endec" > ~/.endecInstall.txt
+sudo find /usr/local/bin -name "endec" > ~/.endecInstall.txt
 cat ~/.endecInstall.txt | grep -i "endec" > /dev/null           
 
 if [[ $? -eq 0 ]]
@@ -229,7 +229,7 @@ then
 		rm -rf ~/.endecSTDERR.txt 2> /dev/null
 	elif [[ $1 =~ ^"--uninstall"$ ]]
 	then
-		sudo rm -rf /usr/bin/endec	
+		sudo rm -rf /usr/local/bin/endec
 	elif [[ $1 =~ ^"--help"$ ]] || [[ $1 =~ ^"-h"$ ]]
 	then
 		printf "Usage:\nendec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the PATH of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/bin, permanently)\n \n  -h, --help\t Show this message\n\n\n"
@@ -237,7 +237,7 @@ then
 		printf "\noptions: -en, -de, or -h, --help for info\n\n"
 	fi
 else 
-	printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/bin to run it as command\n\n"
+	printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin to run it as command\n\n"
 
 fi
 
