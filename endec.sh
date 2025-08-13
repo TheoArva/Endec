@@ -9,61 +9,61 @@
 
 nameinput() { #prompt user to type file/folder name for encrypting & zipping / unzipping & decrypting
 
-printf "\nEnter file or folder name:\n"
-IFS= read -r response
+	printf "\nEnter file or folder name:\n"
+	IFS= read -r response
 
 }
 
 promptdelete() { #prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
 
-i=1
+	i=1
 
-printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?";
+	printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?";
 
-IFS=read -r response3
+	IFS=read -r response3
 
-if [[ "$response3" =~ [yY] ]]
-then
-	rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
-elif [[ "$response3" =~ [nN] ]]
-then
-	return 0
-elif [[ "$response3" != [yYnN] ]]
-then
-	while [[ $i -le 2 ]]
-	do
-		printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n";
-		touch -f ~/.endecSTDERR.txt;
-		IFS= read -r response3;
-		if [[ "$response3" =~ [nN] ]]
-		then
-			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-			break
-		elif [[ "$response3" =~ [yY] ]]
+		if [[ "$response3" =~ [yY] ]]
 		then
 			rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
-			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-			break
-		fi
-		((i++))
-	done
-	ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
-	if [[ $? -eq 0 ]]
-	then
-        	printf ""$response3" is invalid.\n";
-		printf "Failed Attempt! No files were deleted!\n";
-        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-	else
-        	return 0
+		elif [[ "$response3" =~ [nN] ]]
+		then
+			return 0
+		elif [[ "$response3" != [yYnN] ]]
+		then
+			while [[ $i -le 2 ]]
+			do
+				printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n";
+				touch -f ~/.endecSTDERR.txt;
+				IFS= read -r response3;
+				if [[ "$response3" =~ [nN] ]]
+				then
+					rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+					break
+				elif [[ "$response3" =~ [yY] ]]
+				then
+					rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
+					rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+					break
+				fi
+				((i++))
+			done
+			ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
+			if [[ $? -eq 0 ]]
+			then
+        		printf ""$response3" is invalid.\n";
+				printf "Failed Attempt! No files were deleted!\n";
+        		rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+			else
+        		return 0
 
+			fi
 	fi
-fi
 
 }
 
 unzel() { #unzip decrypted 'tar.gz' file & prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
 
-tar -xzvf "${response%.gpg}" -C ./ && promptdelete
+	tar -xzvf "${response%.gpg}" -C ./ && promptdelete
 
 }
 
@@ -76,143 +76,138 @@ decreload() { #clear the SHELL from any pre-entered passwds used w/ 'gpg' to dec
 
 nxpassloop() { #activated when user enters an incorrect passwd for decrypting the '*.tar.gz.gpg' file by informing user for their incorrect passwd input & giving them up to 3 tries for passwd re-entering
 
-i=1
+	i=1
 
-printf "\nIncorrect Password! Try again...\n";
-sleep 1;
-decreload;
-if [[ $? -ne 0 ]]
-then	
-	while [[ $i -lt 2 ]]
-	do
-		printf "\nIncorrect Password! Try again...\n\a";
-		sleep 1;
-		decreload;
-		if [[ $? -eq 0 ]]
-		then
-			break
+	printf "\nIncorrect Password! Try again...\n";
+	sleep 1;
+	decreload;
+		if [[ $? -ne 0 ]]
+		then	
+			while [[ $i -lt 2 ]]
+			do
+				printf "\nIncorrect Password! Try again...\n\a";
+				sleep 1;
+				decreload;
+					if [[ $? -eq 0 ]]
+					then
+						break
+					fi
+					((i++))
+			done	
+			cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
+				if [[ $? -eq 0 ]]
+				then
+					printf "\nIncorrect Password!\nFailed attempt... Halt!\n\a" 
+				else
+					unzel 2> /dev/null
+
+				fi
+		else
+			unzel 2> /dev/null
 		fi
-		((i++))
-	done	
-	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
-	if [[ $? -eq 0 ]]
-	then
-		printf "\nIncorrect Password!\nFailed attempt... Halt!\n\a" 
-	else
-		unzel 2> /dev/null
-
-	fi
-else
-	unzel 2> /dev/null
-
-fi
 
 }
 
 newnamezipcrypt() { #prompt user to enter a name for the newly created zipped+encrypted file & zip+encrypt the user-selected file/folder
 
-printf "Enter new name of zipped file '*.tar.gz'\n";
-IFS= read -r response2;
-tar -czvf "$response2".tar.gz "$response" 2> /dev/null;
-gpg --symmetric --cipher-algo AES256 "$response2".tar.gz;
-gpgconf --reload gpg-agent;
+	printf "Enter new name of zipped file '*.tar.gz'\n";
+	IFS= read -r response2;
+	tar -czvf "$response2".tar.gz "$response" 2> /dev/null;
+	gpg --symmetric --cipher-algo AES256 "$response2".tar.gz;
+	gpgconf --reload gpg-agent;
 
 }
 
 uncrypt() { #final function unzipping and decrypting the user-selected '*.tar.gz.gpg' file by combining all related previous functions
 
-i=1
+	i=1
 
-nameinput;
-ls -a ./ | grep -x "$response" &> /dev/null
-
-if [[ $? -eq 0 ]]
-then
-        decreload;
-        unzel 2> /dev/null;
-        cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
-        if [[ $? -eq 0 ]]
-        then
-                nxpassloop
-        else
-                return 0
-        fi
-else 
-        while [[ $i -lt 3 ]]
-        do
+	nameinput;
+	ls -a ./ | grep -x "$response" &> /dev/null
+		if [[ $? -eq 0 ]]
+		then
+        	decreload;
+        	unzel 2> /dev/null;
+        	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
+        		if [[ $? -eq 0 ]]
+        		then
+                	nxpassloop
+        		else
+                	return 0
+        		fi
+		else 
+        	while [[ $i -lt 3 ]]
+        	do
                 printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension!\n";
                 sleep 1;
                 touch -f ~/.endecSTDERR.txt;
                 nameinput;
                 ls -a ./ | grep -x "$response" &> /dev/null;
-                if [[ $? -eq 0 ]]
-                then
+					if [[ $? -eq 0 ]]
+                	then
                         rm -rf ~/.endecSTDERR.txt 2> /dev/null;
                         decreload;
                         unzel 2> /dev/null;
                         break
-                fi
-                ((i++))
-        done
-        cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
-        if [[ $? -eq 0 ]]
-        then
-                nxpassloop
-        else
-                ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
-                if [[ $? -eq 0 ]]
-                then
-                        printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
-                        printf "\nFailed Attempt! Halt!\n";
-                        rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                else
-                        return 0
-                fi
-        fi
-fi
+                	fi
+                	((i++))
+        	done
+        	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
+        		if [[ $? -eq 0 ]]
+        		then
+                	nxpassloop
+        		else
+                	ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
+                		if [[ $? -eq 0 ]]
+                		then
+                        	printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
+                        	printf "\nFailed Attempt! Halt!\n";
+                        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+                		else
+                        	return 0
+                		fi
+        		fi
+		fi
 
 }
 
 zipcrypt() { #final function zipping and encrypting the selected file/folder by combining all related previous functions
 
-i=1
+	i=1
 
-nameinput;
-ls -a ./ | grep -x "$response" &> /dev/null
-
-if [[ $? -eq 0 ]]
-then
-        newnamezipcrypt;
-        promptdelete;
-else
-        while [[ $i -lt 3 ]]
-        do
+	nameinput;
+	ls -a ./ | grep -x "$response" &> /dev/null
+		if [[ $? -eq 0 ]]
+		then
+        	newnamezipcrypt;
+        	promptdelete;
+		else
+        	while [[ $i -lt 3 ]]
+        	do
                 printf "\nFile or Folder does NOT exist!\n";
                 sleep 1;
-		touch -f ~/.endecSTDERR.txt;
+				touch -f ~/.endecSTDERR.txt;
                 nameinput;
                 ls -a ./ | grep -x "$response" &> /dev/null;
-                if [[ $? -eq 0 ]]
-                then
-                        newnamezipcrypt;
-			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                        promptdelete;
-                        break
-                fi
-                ((i++))
-        done
-	ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
-	if [[ $? -eq 0 ]]
-	then
-        	printf "\nFile or Folder does NOT exist!\n";
-		printf "\nFailed Attempt! Halt!\n";
-        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-	else
-        	return 0
-
-	fi
-
-fi
+                	if [[ $? -eq 0 ]]
+                	then
+                        	newnamezipcrypt;
+							rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+                        	promptdelete;
+                        	break
+                	fi
+                	((i++))
+        	done
+			ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
+				if [[ $? -eq 0 ]]
+				then
+        			printf "\nFile or Folder does NOT exist!\n";
+					printf "\nFailed Attempt! Halt!\n";
+        			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
+				else
+        			return 0
+				fi
+		fi
 
 }
 
