@@ -61,13 +61,13 @@ fi
 
 }
 
-unzel() { # unzip decrypted 'tar.gz' file & prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
+unzel() { #unzip decrypted 'tar.gz' file & prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
 
 tar -xzvf "${response%.gpg}" -C ./ && promptdelete
 
 }
 
-decreload() { #function used only within the 'nxpassloop()' to clear the SHELL from any pre-entered passwds used w/ gpg to decrypt files & passing any STDERR to a dummy, hidden, temp file 
+decreload() { #clear the SHELL from any pre-entered passwds used w/ 'gpg' to decrypt files & passing any STDERR to a dummy, hidden, temp file for read use
 	
  	gpgconf --reload gpg-agent; 
  	gpg -o "${response%.gpg}" -d "$response" 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
