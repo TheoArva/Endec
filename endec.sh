@@ -109,7 +109,17 @@ fi
 
 }
 
-uncrypt() { 
+newnamezipcrypt() { #prompt user to enter a name for the newly created zipped+encrypted file & zip+encrypt the user-selected file/folder
+
+printf "Enter new name of zipped file '*.tar.gz'\n";
+IFS= read -r response2;
+tar -czvf "$response2".tar.gz "$response" 2> /dev/null;
+gpg --symmetric --cipher-algo AES256 "$response2".tar.gz;
+gpgconf --reload gpg-agent;
+
+}
+
+uncrypt() { #final function unzipping and decrypting the user-selected '*.tar.gz.gpg' file by combining all related previous functions
 
 i=1
 
@@ -163,17 +173,7 @@ fi
 
 }
 
-zipcrypt() {
-
-zip() { 
-
-printf "Enter new name of zipped file '*.tar.gz'\n";
-IFS= read -r response2;
-tar -czvf "$response2".tar.gz "$response" 2> /dev/null;
-gpg --symmetric --cipher-algo AES256 "$response2".tar.gz;
-gpgconf --reload gpg-agent;
-
-}
+zipcrypt() { #final function zipping and encrypting the selected file/folder by combining all related previous functions
 
 i=1
 
@@ -182,7 +182,7 @@ ls -a ./ | grep -x "$response" &> /dev/null
 
 if [[ $? -eq 0 ]]
 then
-        zip;
+        newnamezipcrypt;
         promptdelete;
 else
         while [[ $i -lt 3 ]]
@@ -194,7 +194,7 @@ else
                 ls -a ./ | grep -x "$response" &> /dev/null;
                 if [[ $? -eq 0 ]]
                 then
-                        zip;
+                        newnamezipcrypt;
 			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
                         promptdelete;
                         break
