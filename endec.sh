@@ -214,7 +214,7 @@ fi
 
 }
 
-sudo find /usr/local/bin -name "endec" > ~/.endecInstall.txt
+sudo find /usr/local/bin/ -name "endec" > ~/.endecInstall.txt
 cat ~/.endecInstall.txt | grep -i "endec" > /dev/null           
 
 if [[ $? -eq 0 ]]
