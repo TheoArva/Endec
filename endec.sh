@@ -211,29 +211,27 @@ zipcrypt() { #final function zipping and encrypting the selected file/folder by 
 
 }
 
-sudo find /usr/local/bin/ -name "endec" > ~/.endecInstall.txt;
-cat ~/.endecInstall.txt | grep -i "endec" > /dev/null;  
+sudo find /usr/local/bin/ -name "endec" > ~/.endecInstall.txt; #checks whether the final 'endec' exec file exists in '/usr/local/bin' location & if it is, pass it to a dummy, temp, hidden file
+cat ~/.endecInstall.txt | grep -i "endec" > /dev/null; # verify if the dummy, temp, hidden file includes 'endec' in it...
 	if [[ $? -eq 0 ]]
 	then	
-		if [[ $1 =~ ^"-en"$ ]]
+		if [[ $1 =~ ^"-en"$ ]] #...if it does, check for parameter $1 aka -en and initiate zipping&encrypting...
 		then
 			zipcrypt;
 			rm -rf ~/.endecSTDERR.txt 2> /dev/null
-		elif [[ $1 =~ ^"-de"$ ]]
+		elif [[ $1 =~ ^"-de"$ ]] #...if it does, check for parameter $1 aka -de and initiate unzipping&decrypting...
 		then
 			uncrypt;
 			rm -rf ~/.endecSTDERR.txt 2> /dev/null
-		elif [[ $1 =~ ^"--uninstall"$ ]]
+		elif [[ $1 =~ ^"--uninstall"$ ]] #...if it does, check for parameter $1 aka --uninstall and initiate removing 'endec' permantently from '/user/local/bin' immitating an uninstall behaviour...
 		then
 			sudo rm -rf /usr/local/bin/endec
-		elif [[ $1 =~ ^"--help"$ ]] || [[ $1 =~ ^"-h"$ ]]
+		elif [[ $1 =~ ^"--help"$ ]] || [[ $1 =~ ^"-h"$ ]] #...if it does, check for parameter $1 aka -h or --help and inform the user about howto use the 'endec' exec...
 		then
 			printf "Usage:\nendec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the PATH of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/bin, permanently)\n \n  -h, --help\t Show this message\n\n\n"
 		else
-			printf "\noptions: -en, -de, or -h, --help for info\n\n"
+			printf "\noptions: -en, -de, or -h, --help for info\n\n" #...if it does, check for parameter $1 & if it's not one of -en, -de, --uninstall, -h, --help, then briefly inform the user about proper input for $1...
 		fi
 	else 
-		printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin to run it as command\n\n"
-
-	fi
+		printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin to run it as command\n\n" #...if it does NOT, inform the user about proper steps for installation
 rm -rf ~/.endecInstall.txt
