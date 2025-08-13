@@ -7,14 +7,14 @@
 #You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/
 #Email: theodorosarv@gmail.com
 
-nameinput() {
+nameinput() { #prompt user to type file/folder name for encrypting & zipping / unzipping & decrypting
 
 printf "\nEnter file or folder name:\n"
 IFS= read -r response
 
 }
 
-promptdelete() {
+promptdelete() { #prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
 
 i=1
 
@@ -61,31 +61,33 @@ fi
 
 }
 
-unzel() {
+unzel() { # unzip decrypted 'tar.gz' file & prompt user to select whether to permanent delete initial encrypted '*.tar.gz.gpg' file & its decrypted+zipped '*.tar.gz' file after successfully unzipping & decrypting it, or not
 
 tar -xzvf "${response%.gpg}" -C ./ && promptdelete
 
 }
 
-nxpassloop() {
-
-ino() {
-	gpgconf --reload gpg-agent; gpg -o "${response%.gpg}" -d "$response" 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
+decreload() { #function used only within the 'nxpassloop()' to clear the SHELL from any pre-entered passwds used w/ gpg to decrypt files & passing any STDERR to a dummy, hidden, temp file 
+	
+ 	gpgconf --reload gpg-agent; 
+ 	gpg -o "${response%.gpg}" -d "$response" 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
 
 }
+
+nxpassloop() { #activated when user enters an incorrect passwd for decrypting the '*.tar.gz.gpg' file by informing user for their incorrect passwd input & giving them up to 3 tries for passwd re-entering
 
 i=1
 
 printf "\nIncorrect Password! Try again...\n";
 sleep 1;
-ino;
+decreload;
 if [[ $? -ne 0 ]]
 then	
 	while [[ $i -lt 2 ]]
 	do
 		printf "\nIncorrect Password! Try again...\n\a";
 		sleep 1;
-		ino;
+		decreload;
 		if [[ $? -eq 0 ]]
 		then
 			break
@@ -116,7 +118,7 @@ ls -a ./ | grep -x "$response" &> /dev/null
 
 if [[ $? -eq 0 ]]
 then
-        gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent;
+        decreload;
         unzel 2> /dev/null;
         cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
         if [[ $? -eq 0 ]]
@@ -136,7 +138,7 @@ else
                 if [[ $? -eq 0 ]]
                 then
                         rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                        gpg -o "${response%.gpg}" -d "$response" 2> ~/.endecSTDERR.txt 1> /dev/null && gpgconf --reload gpg-agent;
+                        decreload;
                         unzel 2> /dev/null;
                         break
                 fi
