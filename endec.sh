@@ -228,7 +228,7 @@ cat ~/.endecInstall.txt | grep -i "endec" > /dev/null; # verify if the dummy, te
 			sudo rm -rf /usr/local/bin/endec
 		elif [[ $1 =~ ^"--help"$ ]] || [[ $1 =~ ^"-h"$ ]] #check for parameter $1 aka -h or --help & inform the user about howto use the 'endec' exec...
 		then
-			printf "Usage:\nendec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the PATH of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/bin, permanently)\n \n  -h, --help\t Show this message\n\n\n"
+			printf "Usage: endec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the PATH of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/local/bin/, permanently)\n \n  -h, --help\t Show this message\n\n\n"
 		else #...check for parameter $1 & if it's not one of -en, -de, --uninstall, -h, --help, then briefly inform the user about proper input for $1...
 			printf "\noptions: -en, -de, or -h, --help for info\n\n" 
 		fi
