@@ -20,7 +20,7 @@ promptdelete() { #prompt user to select whether to permanent delete initial encr
 
 	printf "\nOriginal file/folder & its zipped '.*tar.gz' file can be deleted.\nDelete them, permanently: (y/n) ?";
 
-	IFS=read -r response3
+	IFS= read -r response3
 
 		if [[ "$response3" =~ [yY] ]]
 		then
@@ -35,29 +35,29 @@ promptdelete() { #prompt user to select whether to permanent delete initial encr
 				printf ""$response3" is invalid.\nPlease enter y/Y for Yes, or n/N for No\n";
 				touch -f ~/.endecSTDERR.txt;
 				IFS= read -r response3;
-				if [[ "$response3" =~ [nN] ]]
-				then
-					rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-					break
-				elif [[ "$response3" =~ [yY] ]]
-				then
-					rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
-					rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-					break
-				fi
-				((i++))
+					if [[ "$response3" =~ [nN] ]]
+					then
+						rm -rf ~/.endecSTDERR.txt &> /dev/null;
+						break
+					elif [[ "$response3" =~ [yY] ]]
+					then
+						rm -r -f --interactive=never "$response" && rm -r -f --interactive=never "$response2".tar.gz && rm -r -f --interactive=never "${response%.gpg}"
+						rm -rf ~/.endecSTDERR.txt &> /dev/null;
+						break
+					fi
+					((i++))
 			done
-			ls -la ~/ | grep -i "endecSTDERR.txt" 1> /dev/null 2> /dev/null
-			if [[ $? -eq 0 ]]
-			then
-        		printf ""$response3" is invalid.\n";
-				printf "Failed Attempt! No files were deleted!\n";
-        		rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-			else
-        		return 0
+			ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
+				if [[ $? -eq 0 ]]
+				then
+					printf ""$response3" is invalid.\n";
+					printf "Failed Attempt! No files were deleted!\n";
+					rm -rf ~/.endecSTDERR.txt &> /dev/null;
+				else
+					return 0
 
-			fi
-	fi
+				fi
+		fi
 
 }
 
@@ -69,8 +69,8 @@ unzel() { #unzip decrypted 'tar.gz' file & prompt user to select whether to perm
 
 decreload() { #clear the SHELL from any pre-entered passwds used w/ 'gpg' to decrypt files & passing any STDERR to a dummy, hidden, temp file for read use
 	
- 	gpgconf --reload gpg-agent; 
- 	gpg -o "${response%.gpg}" -d "$response" 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
+	gpgconf --reload gpg-agent; 
+	gpg -o "${response%.gpg}" -d "$response" 1> /dev/null 2> ~/.endecSTDERR.txt && gpgconf --reload gpg-agent
 
 }
 
@@ -94,7 +94,7 @@ nxpassloop() { #activated when user enters an incorrect passwd for decrypting th
 					fi
 					((i++))
 			done	
-			cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
+			cat ~/.endecSTDERR.txt 2> /dev/null | grep -i "decryption failed" &> /dev/null;
 				if [[ $? -eq 0 ]]
 				then
 					printf "\nIncorrect Password!\nFailed attempt... Halt!\n\a" 
@@ -126,47 +126,47 @@ uncrypt() { #final function unzipping & decrypting the user-selected '*.tar.gz.g
 	ls -a ./ | grep -x "$response" &> /dev/null
 		if [[ $? -eq 0 ]]
 		then
-        	decreload;
-        	unzel 2> /dev/null;
-        	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
-        		if [[ $? -eq 0 ]]
-        		then
-                	nxpassloop
-        		else
-                	return 0
-        		fi
-		else 
-        	while [[ $i -lt 3 ]]
-        	do
-                printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension!\n";
-                sleep 1;
-                touch -f ~/.endecSTDERR.txt;
-                nameinput;
-                ls -a ./ | grep -x "$response" &> /dev/null;
+			decreload;
+			unzel 2> /dev/null;
+			cat ~/.endecSTDERR.txt 2> /dev/null | grep -i "decryption failed" &> /dev/null;
+				if [[ $? -eq 0 ]]
+				then
+					nxpassloop
+				else
+					return 0
+				fi
+		else
+			while [[ $i -lt 3 ]]
+			do
+				printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension!\n";
+				sleep 1;
+				touch -f ~/.endecSTDERR.txt;
+				nameinput;
+				ls -a ./ | grep -x "$response" &> /dev/null;
 					if [[ $? -eq 0 ]]
-                	then
-                        rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                        decreload;
-                        unzel 2> /dev/null;
-                        break
-                	fi
-                	((i++))
-        	done
-        	cat ~/.endecSTDERR.txt | grep -i "decryption failed" &> /dev/null;
-        		if [[ $? -eq 0 ]]
-        		then
-                	nxpassloop
-        		else
-                	ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
-                		if [[ $? -eq 0 ]]
-                		then
-                        	printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
-                        	printf "\nFailed Attempt! Halt!\n";
-                        	rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                		else
-                        	return 0
-                		fi
-        		fi
+					then
+						rm -rf ~/.endecSTDERR.txt &> /dev/null;
+						decreload;
+						unzel 2> /dev/null;
+						break
+					fi
+					((i++))
+			done
+			cat ~/.endecSTDERR.txt 2> /dev/null | grep -i "decryption failed" &> /dev/null;
+				if [[ $? -eq 0 ]]
+				then
+					nxpassloop
+				else
+					ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
+						if [[ $? -eq 0 ]]
+						then
+							printf "\nFile or Folder does NOT exist, or it's a file w/o a '*.tar.gz.gpg' extension\n";
+							printf "\nFailed Attempt! Halt!\n";
+							rm -rf ~/.endecSTDERR.txt &> /dev/null;
+						else
+							return 0
+						fi
+				fi
 		fi
 
 }
@@ -179,61 +179,61 @@ zipcrypt() { #final function zipping & encrypting the user-selected file/folder 
 	ls -a ./ | grep -x "$response" &> /dev/null
 		if [[ $? -eq 0 ]]
 		then
-        	newnamezipcrypt;
-        	promptdelete;
+			newnamezipcrypt;
+			promptdelete;
 		else
-        	while [[ $i -lt 3 ]]
-        	do
-                printf "\nFile or Folder does NOT exist!\n";
-                sleep 1;
+			while [[ $i -lt 3 ]]
+			do
+				printf "\nFile or Folder does NOT exist!\n";
+				sleep 1;
 				touch -f ~/.endecSTDERR.txt;
-                nameinput;
-                ls -a ./ | grep -x "$response" &> /dev/null;
-                	if [[ $? -eq 0 ]]
-                	then
-                        	newnamezipcrypt;
-							rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-                        	promptdelete;
-                        	break
-                	fi
-                	((i++))
-        	done
-			ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
-				if [[ $? -eq 0 ]]
-				then
-        			printf "\nFile or Folder does NOT exist!\n";
-					printf "\nFailed Attempt! Halt!\n";
-        			rm -rf ~/.endecSTDERR.txt 2> /dev/null;
-				else
-        			return 0
-				fi
+				nameinput;
+				ls -a ./ | grep -x "$response" &> /dev/null;
+					if [[ $? -eq 0 ]]
+					then
+						newnamezipcrypt;
+						rm -rf ~/.endecSTDERR.txt &> /dev/null;
+						promptdelete;
+						break
+					fi
+					((i++))
+				done
+				ls -la ~/ | grep -i "endecSTDERR.txt" &> /dev/null
+					if [[ $? -eq 0 ]]
+					then
+						printf "\nFile or Folder does NOT exist!\n";
+						printf "\nFailed Attempt! Halt!\n";
+						rm -rf ~/.endecSTDERR.txt &> /dev/null;
+					else
+						return 0
+					fi
 		fi
 
 }
 
-sudo find /usr/local/bin/ -name "endec" > ~/.endecInstall.txt; #checks whether the final 'endec' exec file exists in '/usr/local/bin' path & if it is, pass it to a dummy, temp, hidden file
-cat ~/.endecInstall.txt | grep -i "endec" > /dev/null; # verify if the dummy, temp, hidden file includes 'endec' in it...
+sudo find /usr/local/bin/ -name "endec" > ~/.endecInstall.txt; #checks whether the final 'endec' exec file exists in '/usr/local/bin/' path & if it is, pass it to a dummy, temp, hidden file
+cat ~/.endecInstall.txt 2> /dev/null | grep -i "endec" &> /dev/null; # verify if the dummy, temp, hidden file includes 'endec' in it...
 	if [[ $? -eq 0 ]] #if it does...
 	then	
 		if [[ $1 =~ ^"-en"$ ]] #...check for parameter $1 aka -en & initiate zipping+encrypting...
 		then
 			zipcrypt;
-			rm -rf ~/.endecSTDERR.txt 2> /dev/null
+			rm -rf ~/.endecSTDERR.txt &> /dev/null
 		elif [[ $1 =~ ^"-de"$ ]] #...check for parameter $1 aka -de & initiate unzipping+decrypting...
 		then
 			uncrypt;
-			rm -rf ~/.endecSTDERR.txt 2> /dev/null
+			rm -rf ~/.endecSTDERR.txt &> /dev/null
 		elif [[ $1 =~ ^"--uninstall"$ ]] #...check for parameter $1 aka --uninstall & initiate removal of 'endec' permantently from '/user/local/bin/' path immitating an uninstallation behaviour...
 		then
 			sudo rm -rf /usr/local/bin/endec
 		elif [[ $1 =~ ^"--help"$ ]] || [[ $1 =~ ^"-h"$ ]] #check for parameter $1 aka -h or --help & inform the user about howto use the 'endec' exec...
 		then
-			printf "Usage: endec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the PATH of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/local/bin/, permanently)\n \n  -h, --help\t Show this message\n\n\n"
+			printf "Usage:\nendec [OPTIONS]...\n\nZip a file/folder & Ecrypt it.\n\nand/or\n\nDecrypt a file/folder & Unzip it.\n \nNOTE: Run 'endec' within the Path of file/folder in question.\n \nOptions:\n\n  -en \t \t Zip & Encrypt\n \n  -de \t \t Decrypt & Unzip\n \n  --uninstall \t Uninstall (Delete 'endec' from /usr/local/bin/, permanently)\n \n  -h, --help\t Show this message\n\n\n"
 		else #...check for parameter $1 & if it's not one of -en, -de, --uninstall, -h, --help, then briefly inform the user about proper input for $1...
 			printf "\noptions: -en, -de, or -h, --help for info\n\n" 
 		fi
 	else #if it does NOT, inform the user about proper steps for installation
-		printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin to run it as command\n\n" 
+		printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin/ to run it as command\n\n"
 	fi
 
-rm -rf ~/.endecInstall.txt
+rm -rf ~/.endecInstall.txt &> /dev/null
