@@ -234,4 +234,6 @@ cat ~/.endecInstall.txt | grep -i "endec" > /dev/null; # verify if the dummy, te
 		fi
 	else #if it does NOT, inform the user about proper steps for installation
 		printf "\nRun 'makefile' to install.\n\nType:\n\nmake\n\nand hit Enter.\n(you must be within the same dir as 'makefile' & 'endec.sh'.)\n\nInfo:\n\nmakefile \tInstalls 'gpg' & 'tar', makes endec.sh executable,\n \t \tmoves it /usr/local/bin to run it as command\n\n" 
+	fi
+
 rm -rf ~/.endecInstall.txt
