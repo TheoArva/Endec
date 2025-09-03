@@ -1,4 +1,4 @@
-**Endec (v1.0)**
+**endec (v1.0)**
 
 **Copyright (C) 2021 Theodoros Arvanitis (Author)**
 
@@ -17,7 +17,7 @@ along with this program.  If not, see [https://www.gnu.org/licenses/](https://ww
 
 Email: *theodorosarv@gmail.com*
 
-## Endec ##
+## endec ##
 
 This is a script written in Shell/Bash, which allows user to:
 
